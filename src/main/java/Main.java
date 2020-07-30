@@ -10,7 +10,7 @@ import org.apache.spark.streaming.dstream.DStream;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         String path = "hdfs://sandbox-hdp.hortonworks.com:8020/201_expedia_output";
 
@@ -18,6 +18,8 @@ public class Main {
         JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(1));
 
         JavaDStream<String> data = jssc.textFileStream(path);
+        jssc.start();
+        jssc.awaitTermination();
         System.out.println(data.count());
 
 
