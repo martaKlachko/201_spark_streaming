@@ -14,14 +14,30 @@ public class Main {
 
         String path = "hdfs://sandbox-hdp.hortonworks.com:8020/expedia/";
 
-        SparkConf conf = new SparkConf().setAppName("201_streaming_spark");
-        JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(1));
+//        SparkConf conf = new SparkConf().setAppName("201_streaming_spark");
+//        JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(1));
 
-        JavaDStream<String> data = jssc.textFileStream(path);
+        SparkSession spark = SparkSession
+                .builder()
+                .appName("JavaStructuredStreaming")
+                .getOrCreate();
 
-        data.print(30);jssc.start();
-        jssc.awaitTermination();
-        System.out.println(data.count());
+
+
+        Dataset<Row> data = spark
+                .readStream()
+                .format("parquet")
+                .parquet(path);
+
+
+        System.out.println(data.isStreaming());    // Returns True for DataFrames that have streaming sources
+
+        data.printSchema();
+//
+//
+//        jssc.start();
+//        jssc.awaitTermination();
+//        System.out.println(data.count());
 
 
     }
