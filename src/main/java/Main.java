@@ -18,9 +18,9 @@ public class Main {
         JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(1));
 
         JavaDStream<String> data = jssc.textFileStream(path);
-        jssc.start();
+
+        data.print(30);jssc.start();
         jssc.awaitTermination();
-        data.print(30);
         System.out.println(data.count());
 
 
