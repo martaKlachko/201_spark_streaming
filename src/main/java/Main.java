@@ -19,6 +19,8 @@ public class Main {
 
         JavaDStream<String> data = jssc.textFileStream(path);
         jssc.start();
+        jssc.awaitTermination();
+        data.print(30);
         System.out.println(data.count());
 
 
