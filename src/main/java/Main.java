@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        String path = "hdfs://sandbox-hdp.hortonworks.com:8020/201_expedia_output";
+        String path = "hdfs://sandbox-hdp.hortonworks.com:8020/expedia/";
 
         SparkConf conf = new SparkConf().setAppName("201_streaming_spark");
         JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(1));
