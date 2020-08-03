@@ -1,11 +1,6 @@
-import org.apache.spark.SparkConf;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.apache.spark.streaming.Durations;
-import org.apache.spark.streaming.api.java.JavaDStream;
-import org.apache.spark.streaming.api.java.JavaStreamingContext;
-import org.apache.spark.streaming.dstream.DStream;
 
 
 public class Main {
@@ -48,8 +43,8 @@ public class Main {
 
         Dataset<Row> weather = spark
                 .readStream()
-                .format("avro")
-                .load(weather_path);
+                .format("parquet")
+                .parquet(weather_path);
 
 
         System.out.println(weather.isStreaming());    // Returns True for DataFrames that have streaming sources
