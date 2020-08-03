@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        String path = "hdfs://sandbox-hdp.hortonworks.com:8020/expedia/";
+        String path = "hdfs://sandbox-hdp.hortonworks.com:8020/201_expedia_output/ci_year=2016";
 
 //        SparkConf conf = new SparkConf().setAppName("201_streaming_spark");
 //        JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(1));
@@ -24,15 +24,15 @@ public class Main {
 
 
 
-        Dataset<Row> data = spark
+        Dataset<Row> data_2016 = spark
                 .readStream()
                 .format("parquet")
                 .parquet(path);
 
 
-        System.out.println(data.isStreaming());    // Returns True for DataFrames that have streaming sources
+        System.out.println(data_2016.isStreaming());    // Returns True for DataFrames that have streaming sources
 
-        data.printSchema();
+        data_2016.printSchema();
 //
 //
 //        jssc.start();
