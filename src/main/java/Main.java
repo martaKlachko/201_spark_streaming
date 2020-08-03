@@ -41,6 +41,8 @@ public class Main {
         Dataset<Row> hotels= spark
                 .readStream()
                 .format("csv")
+                .option("header", "true")
+                .option("inferSchema", "true")
                 .csv(hotels_path);
 
 
