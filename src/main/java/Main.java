@@ -22,23 +22,22 @@ public class Main {
                 .getOrCreate();
 
 
+        Dataset<Row> data_2016 = spark
+                .readStream()
+                .format("parquet")
+                .parquet(path_2016);
 
-//        Dataset<Row> data_2016 = spark
-//                .readStream()
-//                .format("parquet")
-//                .parquet(path_2016);
-//
-//        Dataset<Row> data_2017 = spark
-//                .readStream()
-//                .format("parquet")
-//                .parquet(path_2017);
+        Dataset<Row> data_2017 = spark
+                .readStream()
+                .format("parquet")
+                .parquet(path_2017);
 
-//        Dataset<Row> hotels= spark
-//                .readStream()
-//                .format("csv")
-//                .option("header", "true")
-//                .option("inferSchema", "true")
-//                .csv(hotels_path);
+        Dataset<Row> hotels= spark
+                .readStream()
+                .format("csv")
+                .option("header", "true")
+                .option("inferSchema", "true")
+                .csv(hotels_path);
 
 
         Dataset<Row> weather = spark
@@ -47,14 +46,13 @@ public class Main {
                 .parquet(weather_path);
 
 
-        System.out.println(weather.isStreaming());    // Returns True for DataFrames that have streaming sources
 
-        weather.printSchema();
-//
-//
-//        jssc.start();
-//        jssc.awaitTermination();
-//        System.out.println(data.count());
+      //  Dataset <Row> hotels_weather_joined = hotels.join(weather, hotels.col("id")).
+
+     //   System.out.println(weather.isStreaming());    // Returns True for DataFrames that have streaming sources
+
+       weather.printSchema();
+       hotels.printSchema();
 
 
     }
