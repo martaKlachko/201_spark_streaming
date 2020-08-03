@@ -41,7 +41,7 @@ public class Main {
         Dataset<Row> hotels= spark
                 .readStream()
                 .format("csv")
-                .parquet(hotels_path);
+                .csv(hotels_path);
 
 
 //        Dataset<Row> weather = spark
