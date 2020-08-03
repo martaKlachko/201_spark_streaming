@@ -12,7 +12,10 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        String path = "hdfs://sandbox-hdp.hortonworks.com:8020/201_expedia_output/ci_year=2016";
+        String path_2016 = "hdfs://sandbox-hdp.hortonworks.com:8020/201_expedia_output/ci_year=2016";
+        String path_2017 = "hdfs://sandbox-hdp.hortonworks.com:8020/201_expedia_output/ci_year=2017";
+        String hotels_path = "hdfs://sandbox-hdp.hortonworks.com:8020/hotels";
+        String weather_path = "hdfs://sandbox-hdp.hortonworks.com:8020/weather";
 
 //        SparkConf conf = new SparkConf().setAppName("201_streaming_spark");
 //        JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(1));
@@ -25,15 +28,31 @@ public class Main {
 
 
 
-        Dataset<Row> data_2016 = spark
+//        Dataset<Row> data_2016 = spark
+//                .readStream()
+//                .format("parquet")
+//                .parquet(path_2016);
+//
+//        Dataset<Row> data_2017 = spark
+//                .readStream()
+//                .format("parquet")
+//                .parquet(path_2017);
+
+        Dataset<Row> hotels= spark
                 .readStream()
-                .format("parquet")
-                .parquet(path);
+                .format("csv")
+                .parquet(hotels_path);
 
 
-        System.out.println(data_2016.isStreaming());    // Returns True for DataFrames that have streaming sources
+//        Dataset<Row> weather = spark
+//                .readStream()
+//                .format("parquet")
+//                .parquet(weather_path);
 
-        data_2016.printSchema();
+
+        System.out.println(hotels.isStreaming());    // Returns True for DataFrames that have streaming sources
+
+        hotels.printSchema();
 //
 //
 //        jssc.start();
