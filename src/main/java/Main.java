@@ -20,6 +20,7 @@ public class Main {
         SparkSession spark = SparkSession
                 .builder()
                 .appName("JavaStructuredStreaming")
+                .config("spark.sql.streaming.schemaInference", true)
                 .getOrCreate();
 
 
