@@ -50,11 +50,11 @@ public class Main {
 
         Dataset<Row> weather_rounded = weather.withColumn("lat_rounded", functions.round(weather.col("lat"), 2))
                 .withColumn("lng_rounded", functions.round(weather.col("lng"), 2));
-        Dataset<Row> hotels_rounded = hotels.withColumn("Latitude_rounded", functions.round(hotels.col("Latitude"), 2))
-                .withColumn("Longitude_rounded", functions.round(hotels.col("Longitude"), 2));
-        Dataset<Row> hotels_weather_joined = hotels_rounded
-                .join(weather_rounded, hotels_rounded.col("Latitude_rounded").equalTo(weather_rounded.col("lat_rounded"))
-              .and(hotels_rounded.col("Longitude_rounded").equalTo(weather_rounded.col("lng_rounded"))));
+//        Dataset<Row> hotels_rounded = hotels.withColumn("Latitude_rounded", functions.round(hotels.col("Latitude"), 2))
+//                .withColumn("Longitude_rounded", functions.round(hotels.col("Longitude"), 2));
+//        Dataset<Row> hotels_weather_joined = hotels_rounded
+//                .join(weather_rounded, hotels_rounded.col("Latitude_rounded").equalTo(weather_rounded.col("lat_rounded"))
+//              .and(hotels_rounded.col("Longitude_rounded").equalTo(weather_rounded.col("lng_rounded"))));
 
 //        Dataset<Row> expedia_hotels_joined = hotels_rounded
 //                .join(expedia, hotels_rounded.col("Id").equalTo(expedia.col("hotel_id")));
@@ -63,9 +63,9 @@ public class Main {
 
 
 
-           System.out.println(hotels_weather_joined.count());    // Returns True for DataFrames that have streaming sources
-
-        hotels_weather_joined.printSchema();
+//           System.out.println(hotels_weather_joined.count());    // Returns True for DataFrames that have streaming sources
+//
+//        hotels_weather_joined.printSchema();
       // hotels.printSchema();
 
 
