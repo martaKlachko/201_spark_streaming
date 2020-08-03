@@ -38,23 +38,23 @@ public class Main {
 //                .format("parquet")
 //                .parquet(path_2017);
 
-        Dataset<Row> hotels= spark
-                .readStream()
-                .format("csv")
-                .option("header", "true")
-                .option("inferSchema", "true")
-                .csv(hotels_path);
-
-
-//        Dataset<Row> weather = spark
+//        Dataset<Row> hotels= spark
 //                .readStream()
-//                .format("parquet")
-//                .parquet(weather_path);
+//                .format("csv")
+//                .option("header", "true")
+//                .option("inferSchema", "true")
+//                .csv(hotels_path);
 
 
-        System.out.println(hotels.isStreaming());    // Returns True for DataFrames that have streaming sources
+        Dataset<Row> weather = spark
+                .readStream()
+                .format("avro")
+                .load(weather_path);
 
-        hotels.printSchema();
+
+        System.out.println(weather.isStreaming());    // Returns True for DataFrames that have streaming sources
+
+        weather.printSchema();
 //
 //
 //        jssc.start();
