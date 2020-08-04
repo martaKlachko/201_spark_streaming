@@ -54,10 +54,10 @@ public class Main {
         Dataset<Row> hotels_weather_joined = spark
                 .readStream()
                 .format("csv")
-                .option("header", "true")
+                .option("header", "false")
                 .option("inferSchema", "true")
                 .csv(hotels_weather_joined_path);
-//              
+//
         System.out.println(hotels_weather_joined.isStreaming());    // Returns True for DataFrames that have streaming sources
 //
         hotels_weather_joined.printSchema();
