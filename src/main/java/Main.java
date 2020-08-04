@@ -58,10 +58,14 @@ public class Main {
                 .option("inferSchema", "true")
                 .csv(hotels_weather_joined_path);
 //
-        System.out.println(hotels_weather_joined.isStreaming());    // Returns True for DataFrames that have streaming sources
+//        System.out.println(hotels_weather_joined.isStreaming());    // Returns True for DataFrames that have streaming sources
 //
-        hotels_weather_joined.printSchema();
+ //       hotels_weather_joined.printSchema();
         //  hotels.printSchema();
+
+        Dataset<Row> data_2016_with_watermark = data_2016.withWatermark("_c13", "2 hours");
+        Dataset<Row> data_2017_with_watermark = data_2017.withWatermark("_c13", "2 hours");
+        Dataset<Row> hotels_weather_joined_with_watermark = hotels_weather_joined.withWatermark("date_time", "2 hours");
 
 
     }
