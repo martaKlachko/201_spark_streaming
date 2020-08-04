@@ -69,6 +69,6 @@ public class Main {
 
 
         data_2016.as("c").join(hotels_weather_joined.as("i")) // INNER JOIN is the default
-                .where("c.hotel_id = i.id");
+                .where("c.hotel_id = i._c0");
     }
 }
