@@ -68,7 +68,7 @@ public class Main {
         Dataset<Row> hotels_weather_joined_with_watermark = hotels_weather_joined.withWatermark("_c13", "2 hours");
 
 
-        data_2016.join(hotels_weather_joined, "hotel_id = id");
-
+        data_2016.as("c").join(hotels_weather_joined.as("i")) // INNER JOIN is the default
+                .where("c.hotel_id = i.id");
     }
 }
