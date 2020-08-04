@@ -60,13 +60,15 @@ public class Main {
 //
 //        System.out.println(hotels_weather_joined.isStreaming());    // Returns True for DataFrames that have streaming sources
 //
- //       hotels_weather_joined.printSchema();
+        //       hotels_weather_joined.printSchema();
         //  hotels.printSchema();
 
-        Dataset<Row> data_2016_with_watermark = data_2016.withWatermark("lag_day", "2 hours");
-        Dataset<Row> data_2017_with_watermark = data_2017.withWatermark("lag_day", "2 hours");
+//        Dataset<Row> data_2016_with_watermark = data_2016.withWatermark("lag_day", "2 hours");
+//        Dataset<Row> data_2017_with_watermark = data_2017.withWatermark("lag_day", "2 hours");
         Dataset<Row> hotels_weather_joined_with_watermark = hotels_weather_joined.withWatermark("_c13", "2 hours");
 
+
+        data_2016.join(hotels_weather_joined, "hotel_id = id");
 
     }
 }
