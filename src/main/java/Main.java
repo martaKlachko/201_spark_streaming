@@ -65,7 +65,7 @@ public class Main {
 
 //        Dataset<Row> data_2016_with_watermark = data_2016.withWatermark("_c13", "2 hours");
 //        Dataset<Row> data_2017_with_watermark = data_2017.withWatermark("_c13", "2 hours");
-        Dataset<Row> hotels_weather_joined_with_watermark = hotels_weather_joined.withWatermark("date_time", "2 hours");
+        Dataset<Row> hotels_weather_joined_with_watermark = hotels_weather_joined.withWatermark("_c13", "2 hours");
 
 
     }
