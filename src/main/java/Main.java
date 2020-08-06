@@ -1,11 +1,13 @@
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.streaming.StreamingQuery;
+import org.apache.spark.sql.streaming.StreamingQueryException;
 
 
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, StreamingQueryException {
 
         String path_2016 = "hdfs://sandbox-hdp.hortonworks.com:8020/201_expedia_output/ci_year=2016";
         String path_2017 = "hdfs://sandbox-hdp.hortonworks.com:8020/201_expedia_output/ci_year=2017";
@@ -74,8 +76,10 @@ public class Main {
                 .where("c.hotel_id = i._c0").union(joined);
 
 //        System.out.println(union.count());
-               union.writeStream()
+        StreamingQuery query =   union.writeStream()
                 .format("console")
                 .start();
+        query.awaitTermination();
+
     }
 }
