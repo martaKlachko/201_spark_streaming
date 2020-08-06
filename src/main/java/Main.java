@@ -1,6 +1,7 @@
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.streaming.OutputMode;
 import org.apache.spark.sql.streaming.StreamingQuery;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 
@@ -48,38 +49,38 @@ public class Main {
 //                .format("parquet")
 //                .parquet(weather_path);
         Dataset<Row> expedia = data_2017.union(data_2017);
+        StreamingQuery query =   expedia.writeStream()
+                .format("console")
+                .outputMode(OutputMode.Append())
+                .start();
+        query.awaitTermination();
 
 //        Dataset<Row> weather_rounded = weather.withColumn("lat_rounded", functions.round(weather.col("lat"), 2))
 //                .withColumn("lng_rounded", functions.round(weather.col("lng"), 2));
 //        Dataset<Row> hotels_rounded = hotels.withColumn("Latitude_rounded", functions.round(hotels.col("Latitude"), 2))
 //                .withColumn("Longitude_rounded", functions.round(hotels.col("Longitude"), 2));
-        Dataset<Row> hotels_weather_joined = spark
-                .readStream()
-                .format("csv")
-                .option("header", "false")
-                .option("inferSchema", "true")
-                .csv(hotels_weather_joined_path);
+//        Dataset<Row> hotels_weather_joined = spark
+//                .readStream()
+//                .format("csv")
+//                .option("header", "false")
+//                .option("inferSchema", "true")
+//                .csv(hotels_weather_joined_path);
 
 
-//
-//        System.out.println(hotels_weather_joined.isStreaming());    // Returns True for DataFrames that have streaming sources
-//
-        //       hotels_weather_joined.printSchema();
-        //  hotels.printSchema();
 
 //        Dataset<Row> data_2016_with_watermark = data_2016.withWatermark("lag_day", "2 hours");
 //        Dataset<Row> data_2017_with_watermark = data_2017.withWatermark("lag_day", "2 hours");
-        Dataset<Row> hotels_weather_joined_with_watermark = hotels_weather_joined.withWatermark("_c13", "2 hours");
+        //    Dataset<Row> hotels_weather_joined_with_watermark = hotels_weather_joined.withWatermark("_c13", "2 hours");
 
 
-        Dataset<Row> joined =  expedia.as("c").join(hotels_weather_joined.as("i")) // INNER JOIN is the default
-                .where("c.hotel_id = i._c0");
+//        Dataset<Row> joined =  expedia.as("e").join(hotels_weather_joined.as("h")) // INNER JOIN is the default
+//                .where("e.hotel_id = h._c0");
 
 //        System.out.println(union.count());
-        StreamingQuery query =   joined.writeStream()
-                .format("console")
-                .start();
-        query.awaitTermination();
+//        StreamingQuery query =   joined.writeStream()
+//                .format("console")
+//                .start();
+//        query.awaitTermination();
 
     }
 }
