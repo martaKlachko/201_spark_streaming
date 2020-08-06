@@ -73,6 +73,9 @@ public class Main {
         Dataset<Row> union = data_2017.as("c").join(hotels_weather_joined.as("i")) // INNER JOIN is the default
                 .where("c.hotel_id = i._c0").union(joined);
 
-        System.out.println(union.count());
+//        System.out.println(union.count());
+               union.writeStream()
+                .format("console")
+                .start();
     }
 }
