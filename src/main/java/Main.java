@@ -35,19 +35,19 @@ public class Main {
                 .format("parquet")
                 .parquet(path_2017);
 
-        Dataset<Row> hotels= spark
-                .readStream()
-                .format("csv")
-                .option("header", "true")
-                .option("inferSchema", "true")
-                .csv(hotels_path);
+//        Dataset<Row> hotels= spark
+//                .readStream()
+//                .format("csv")
+//                .option("header", "true")
+//                .option("inferSchema", "true")
+//                .csv(hotels_path);
 
 
-        Dataset<Row> weather = spark
-                .readStream()
-                .format("parquet")
-                .parquet(weather_path);
-
+//        Dataset<Row> weather = spark
+//                .readStream()
+//                .format("parquet")
+//                .parquet(weather_path);
+        Dataset<Row> expedia = data_2017.union(data_2017);
 
 //        Dataset<Row> weather_rounded = weather.withColumn("lat_rounded", functions.round(weather.col("lat"), 2))
 //                .withColumn("lng_rounded", functions.round(weather.col("lng"), 2));
@@ -59,6 +59,8 @@ public class Main {
                 .option("header", "false")
                 .option("inferSchema", "true")
                 .csv(hotels_weather_joined_path);
+
+
 //
 //        System.out.println(hotels_weather_joined.isStreaming());    // Returns True for DataFrames that have streaming sources
 //
@@ -70,13 +72,11 @@ public class Main {
         Dataset<Row> hotels_weather_joined_with_watermark = hotels_weather_joined.withWatermark("_c13", "2 hours");
 
 
-        Dataset<Row> joined =  data_2016.as("c").join(hotels_weather_joined.as("i")) // INNER JOIN is the default
+        Dataset<Row> joined =  expedia.as("c").join(hotels_weather_joined.as("i")) // INNER JOIN is the default
                 .where("c.hotel_id = i._c0");
-        Dataset<Row> union = data_2017.as("c").join(hotels_weather_joined.as("i")) // INNER JOIN is the default
-                .where("c.hotel_id = i._c0").union(joined);
 
 //        System.out.println(union.count());
-        StreamingQuery query =   union.writeStream()
+        StreamingQuery query =   joined.writeStream()
                 .format("console")
                 .start();
         query.awaitTermination();
