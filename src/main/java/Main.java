@@ -22,14 +22,15 @@ public class Main {
         SparkSession spark = SparkSession
                 .builder()
                 .appName("JavaStructuredStreaming")
-                .config("spark.sql.streaming.schemaInference", true)
+               .master("yarn")
                 .getOrCreate();
 
 
-        Dataset<Row> data_2016 = spark
-                .readStream()
-                .format("parquet")
-                .parquet(path_2016);
+//        Dataset<Row> data_2016 = spark
+//                .readStream()
+//                .format("parquet")
+//
+//                .parquet(path_2016);
 
         Dataset<Row> data_2017 = spark
                 .readStream()
@@ -48,8 +49,8 @@ public class Main {
 //                .readStream()
 //                .format("parquet")
 //                .parquet(weather_path);
-        Dataset<Row> expedia = data_2017.union(data_2017);
-        StreamingQuery query =   expedia.writeStream()
+//        Dataset<Row> expedia = data_2017.union(data_2017);
+        StreamingQuery query =   data_2017.writeStream()
                 .format("console")
                 .outputMode(OutputMode.Append())
                 .start();
