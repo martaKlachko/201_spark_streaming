@@ -1,8 +1,6 @@
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.streaming.OutputMode;
-import org.apache.spark.sql.streaming.StreamingQuery;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 
 
@@ -29,6 +27,7 @@ public class Main {
                 .appName("JavaStructuredStreaming")
                 .master("local[2]")
                 .config("spark.sql.streaming.schemaInference", true)
+                .config("spark.local.dir", "/tmp/spark-temp")
                 .getOrCreate();
 
 
