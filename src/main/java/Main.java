@@ -65,8 +65,8 @@ public class Main {
         Dataset<Row> data_2017 = spark
                 .readStream()
                 .format("parquet")
-                .schema(schema)
-                .load(path_2017);
+              //  .schema(schema)
+                .parquet(path_2017);
 
 //        Dataset<Row> hotels= spark
 //                .readStream()
