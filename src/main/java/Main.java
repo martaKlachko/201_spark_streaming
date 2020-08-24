@@ -4,6 +4,12 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.OutputMode;
 import org.apache.spark.sql.streaming.StreamingQuery;
 import org.apache.spark.sql.streaming.StreamingQueryException;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Main {
@@ -16,13 +22,25 @@ public class Main {
         String hotels_weather_joined_path = "hdfs://sandbox-hdp.hortonworks.com:8020/hotels_weather_joined";
         String weather_path = "hdfs://sandbox-hdp.hortonworks.com:8020/weather";
 
+
+        // The schema is encoded in a string
+        String schemaString = "id hotel_id srch_ci srch_co lag_day diff value";
+
+// Generate the schema based on the string of schema
+        List<StructField> fields = new ArrayList<>();
+        for (String fieldName : schemaString.split(" ")) {
+            StructField field = DataTypes.createStructField(fieldName, DataTypes.StringType, true);
+            fields.add(field);
+        }
+        StructType schema = DataTypes.createStructType(fields);
+
 //        SparkConf conf = new SparkConf().setAppName("201_streaming_spark");
 //        JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(1));
 
         SparkSession spark = SparkSession
                 .builder()
                 .appName("JavaStructuredStreaming")
-               .master("yarn")
+                .master("yarn")
                 .getOrCreate();
 
 
@@ -35,7 +53,8 @@ public class Main {
         Dataset<Row> data_2017 = spark
                 .readStream()
                 .format("parquet")
-                .parquet(path_2017);
+                .schema(schema)
+                .load(path_2017);
 
 //        Dataset<Row> hotels= spark
 //                .readStream()
