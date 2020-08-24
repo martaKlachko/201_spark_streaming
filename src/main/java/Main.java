@@ -63,7 +63,7 @@ public class Main {
         data.coalesce(1).writeStream()
                 .format("parquet")
                 .outputMode(OutputMode.Append())
-        .option("checkpointLocation", "gs://checkpoint")
+        .option("checkpointLocation", "/checkpoint")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
