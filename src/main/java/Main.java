@@ -53,6 +53,7 @@ public class Main {
                 .builder()
                 .appName("JavaStructuredStreaming")
                 .master("yarn")
+                .config("spark.sql.streaming.schemaInference", true)
                 .getOrCreate();
 
 
