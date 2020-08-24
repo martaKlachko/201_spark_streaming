@@ -28,10 +28,22 @@ public class Main {
 
 // Generate the schema based on the string of schema
         List<StructField> fields = new ArrayList<>();
-        for (String fieldName : schemaString.split(" ")) {
-            StructField field = DataTypes.createStructField(fieldName, DataTypes.StringType, true);
-            fields.add(field);
-        }
+
+        StructField id = DataTypes.createStructField("id", DataTypes.IntegerType, true);
+        fields.add(id);
+        StructField hotel_id = DataTypes.createStructField("hotel_id", DataTypes.IntegerType, true);
+        fields.add(hotel_id);
+        StructField srch_ci = DataTypes.createStructField("srch_ci", DataTypes.StringType, true);
+        fields.add(srch_ci);
+        StructField srch_co = DataTypes.createStructField("srch_co", DataTypes.StringType, true);
+        fields.add(srch_co);
+        StructField lag_day = DataTypes.createStructField("lag_day", DataTypes.DateType, true);
+        fields.add(lag_day);
+        StructField diff = DataTypes.createStructField("diff", DataTypes.IntegerType, true);
+        fields.add(diff);
+        StructField value = DataTypes.createStructField("value", DataTypes.IntegerType, true);
+        fields.add(value);
+
         StructType schema = DataTypes.createStructType(fields);
 
 //        SparkConf conf = new SparkConf().setAppName("201_streaming_spark");
