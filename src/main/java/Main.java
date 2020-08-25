@@ -1,15 +1,18 @@
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.api.java.UDF1;
+import org.apache.spark.sql.functions;
 import org.apache.spark.sql.streaming.OutputMode;
 import org.apache.spark.sql.streaming.StreamingQueryException;
+import org.apache.spark.sql.types.DataTypes;
 
 
 public class Main {
 
     public static void main(String[] args) throws InterruptedException, StreamingQueryException {
 
-      //  String path_2016 = "hdfs://sandbox-hdp.hortonworks.com:8020/201_expedia_output/ci_year=2016";
+        //  String path_2016 = "hdfs://sandbox-hdp.hortonworks.com:8020/201_expedia_output/ci_year=2016";
         String path_2016 = args[0];
         //"C:\\Users\\Marta_Kurman\\201_streaming_spark\\src\\main\\resources\\201_expedia_output\\ci_year=2016";
       //  String path_2017 = "hdfs://sandbox-hdp.hortonworks.com:8020/201_expedia_output/ci_year=2017";
@@ -33,6 +36,11 @@ public class Main {
                 .config("spark.sql.streaming.schemaInference", true)
                 .config("spark.local.dir", "/tmp/spark-temp")
                 .getOrCreate();
+
+        spark
+                .sqlContext()
+                .udf()
+                .register("sampleUDF", sampleUdf(), DataTypes.StringType);
 
 
         Dataset<Row> data_2016 = spark
@@ -72,12 +80,17 @@ public class Main {
 
         Dataset<Row> data_joined_filtered = data_joined_selected.filter(data_joined_selected.col("avg_tmpr_f").$greater(0)
                 .or(data_joined_selected.col("avg_tmpr_c").$greater(0)));
-        data_joined.createOrReplaceTempView("data_joined_filtered");
+        data_joined_filtered.createOrReplaceTempView("data_joined_filtered");
 //
 //        Dataset<Row> data_joined_duration =data_joined.withColumn("duration", data_joined.col("srch_co")
 //                        .$minus(data_joined.col("srch_ci")));
 
         Dataset<Row> data_joined_duration = spark.sql("SELECT *,DATEDIFF( srch_co, srch_ci ) AS diff_days  from data_joined_filtered");
+
+        Dataset<Row> data_joined_duration_1 = data_joined_duration
+                .withColumn("stay type",
+                        functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")));
+
 
         data_joined_duration.coalesce(1).writeStream()
                 .format("parquet")
@@ -86,5 +99,21 @@ public class Main {
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
+    }
+
+    static UDF1<Integer, String> sampleUdf() {
+        return (s1) -> {
+            if (s1 == 1) {
+                return "Short stay";
+            } else if (s1 >= 2 && s1 <= 7) {
+                return "Standart stay";
+            } else if (s1 > 7 && s1 <= 14) {
+                return "Standart extended stay";
+            } else if (s1 > 14 && s1 <= 30) {
+                return "Long stay";
+            } else {
+                return "Erroneous data";
+            }
+        };
     }
 }
