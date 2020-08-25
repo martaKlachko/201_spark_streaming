@@ -91,18 +91,23 @@ public class Main {
                 .withColumn("stay_type",
                         functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")))
                 .withColumn("timestamp", functions.current_timestamp());
-        Dataset<Row> data_joined_duration_2 = data_joined_duration_1
-                .withWatermark("timestamp", "20000 milliseconds")
-                .groupBy(
-                        functions.window(data_joined_duration_1.col("timestamp"), "10 minutes", "5 minutes"),
-                        data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type")).count();
 
+//        Dataset<Row> data_joined_duration_2 = data_joined_duration_1
+//                .withWatermark("timestamp", "20000 milliseconds")
+//                .groupBy(
+//                        functions.window(data_joined_duration_1.col("timestamp"), "1 minute", "30 seconds"),
+//                        data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type")).count();
+        Dataset<Row> data_joined_duration_2 = data_joined_duration_1
+                .withWatermark("timestamp", "1 minute")
+                .groupBy(
+                        functions.window(data_joined_duration_1.col("timestamp"), "1 minute", "30 seconds"),
+                        data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type"))
+                .count();
 
         data_joined_duration_2.coalesce(1).writeStream()
-                .format("parquet")
+                .format("console")
                 .outputMode(OutputMode.Append())
-
-                .option("checkpointLocation", "/checkpoint16")
+                .option("checkpointLocation", "/checkpoint17")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
