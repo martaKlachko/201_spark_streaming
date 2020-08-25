@@ -89,16 +89,17 @@ public class Main {
 
         Dataset<Row> data_joined_duration_1 = data_joined_duration
                 .withColumn("stay_type",
-                        functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")));
-        Dataset<Row> data_joined_duration_2=data_joined_duration_1
-               // .withWatermark("srch_ci", "20000 milliseconds")
-                .groupBy(data_joined_duration_1.col("hotel_id"),data_joined_duration_1.col("stay_type") ).count();
+                        functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")))
+                .withColumn("timestamp", functions.current_timestamp());
+        Dataset<Row> data_joined_duration_2 = data_joined_duration_1
+                .withWatermark("timestamp", "20000 milliseconds")
+                .groupBy(data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type")).count();
 
 
         data_joined_duration_2.coalesce(1).writeStream()
                 .format("parquet")
-                .outputMode(OutputMode.Complete())
-                .option("checkpointLocation", "/checkpoint13")
+                .outputMode(OutputMode.Append())
+                .option("checkpointLocation", "/checkpoint14")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
