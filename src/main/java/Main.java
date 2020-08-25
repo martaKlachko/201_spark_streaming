@@ -1,9 +1,9 @@
-import com.google.common.collect.ImmutableMap;
-import org.apache.spark.api.java.function.VoidFunction2;
-import org.apache.spark.sql.*;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.api.java.UDF1;
+import org.apache.spark.sql.functions;
 import org.apache.spark.sql.streaming.OutputMode;
-import org.apache.spark.sql.streaming.StreamingQuery;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.streaming.Trigger;
 import org.apache.spark.sql.types.DataTypes;
@@ -16,14 +16,14 @@ public class Main {
         //  String path_2016 = "hdfs://sandbox-hdp.hortonworks.com:8020/201_expedia_output/ci_year=2016";
         String path_2016 = args[0];
         //"C:\\Users\\Marta_Kurman\\201_streaming_spark\\src\\main\\resources\\201_expedia_output\\ci_year=2016";
-      //  String path_2017 = "hdfs://sandbox-hdp.hortonworks.com:8020/201_expedia_output/ci_year=2017";
-        String path_2017 =args[1];
+        //  String path_2017 = "hdfs://sandbox-hdp.hortonworks.com:8020/201_expedia_output/ci_year=2017";
+        String path_2017 = args[1];
         //"C:\\Users\\Marta_Kurman\\201_streaming_spark\\src\\main\\resources\\201_expedia_output\\ci_year=2017";
-       // String hotels_path = "hdfs://sandbox-hdp.hortonworks.com:8020/hotels";
-      //  String hotels_weather_joined_path = "hdfs://sandbox-hdp.hortonworks.com:8020/hotels_weather_joined";
+        // String hotels_path = "hdfs://sandbox-hdp.hortonworks.com:8020/hotels";
+        //  String hotels_weather_joined_path = "hdfs://sandbox-hdp.hortonworks.com:8020/hotels_weather_joined";
         String hotels_weather_joined_path = args[2];
         //"C:\\Users\\Marta_Kurman\\201_streaming_spark\\src\\main\\resources\\hotels_weather_joined";
-      //  String weather_path = "hdfs://sandbox-hdp.hortonworks.com:8020/weather";
+        //  String weather_path = "hdfs://sandbox-hdp.hortonworks.com:8020/weather";
 
 //
 //        // The schema is encoded in a string
@@ -96,48 +96,19 @@ public class Main {
                 .withColumn("stay_type",
                         functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")));
 
-        data_joined_duration_1.createOrReplaceTempView("data_joined_duration_1");
-//        Dataset<Row> data_joined_duration_2 = data_joined_duration_1
-//                .groupBy(
-//                        data_joined_duration_1.col("hotel_id"),
-//                        functions.window(functions.column("timestamp"), "1 minute", "30 seconds"))
-//                .count();
+//
+        Dataset<Row> data_joined_duration_2 = data_joined_duration_1
 
-        Dataset<Row> data_joined_duration_2 = spark.sql("select hotel_id, stay_type, count(*) from data_joined_duration_1 " +
-                " group by hotel_id, stay_type");
+                .groupBy(data_joined_duration_1.col("hotel_id"),
+                        functions.window(functions.column("timestamp"), "1 second", "50 milliseconds"))
+                .count();
 
-
-
-
-
-
-
-
-
-
-       data_joined_duration_2.coalesce(1).writeStream()
-               .foreach(new ForeachWriter<Row>() {
-                   @Override
-                   public boolean open(long partitionId, long epochId) {
-                       return true;
-                   }
-
-                   @Override
-                   public void process(Row value) {
-
-
-                   }
-
-
-                   @Override
-                   public void close(Throwable errorOrNull) {}
-               })
-               .start("gs://spark_str/output")
-//                .format("parquet")
-//                .trigger(Trigger.ProcessingTime("10 seconds"))
-//                .outputMode(OutputMode.Complete())
-//                .option("checkpointLocation", "/checkpoint32")
-//                .start("gs://spark_str/output")
+        data_joined_duration_2.coalesce(1).writeStream()
+                .format("parquet")
+              //  .trigger(Trigger.ProcessingTime("10 seconds"))
+                .outputMode(OutputMode.Complete())
+                .option("checkpointLocation", "/checkpoint01")
+                .start("gs://spark_str/output")
                 .awaitTermination();
 
     }
