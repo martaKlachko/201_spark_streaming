@@ -46,8 +46,10 @@ public class Main {
 
         Dataset<Row> data_2016 = spark
                 .readStream()
+
                 .format("parquet")
-                .parquet(path_2016);
+                .parquet(path_2016)
+                ;
 
         Dataset<Row> data_2017 = spark
                 .readStream()
@@ -68,7 +70,8 @@ public class Main {
 //        Dataset<Row> data_2016_with_watermark = data_2016.withWatermark("lag_day", "2 hours");
 //        Dataset<Row> data_2017_with_watermark = data_2017.withWatermark("lag_day", "2 hours");
         //    Dataset<Row> hotels_weather_joined_with_watermark = hotels_weather_joined.withWatermark("_c13", "2 hours");
-        Dataset<Row> data  =  data_2016.union(data_2017);
+        Dataset<Row> data  =  data_2016.union(data_2017).withColumn("timestamp", functions.current_timestamp())
+                .withWatermark("timestamp", "1 minute");
 
 
         Dataset<Row> data_joined =  data.select("id","hotel_id", "srch_ci", "srch_co").as("d").join(hotels_weather_joined.as("h")) // INNER JOIN is the default
@@ -91,7 +94,7 @@ public class Main {
         Dataset<Row> data_joined_duration_1 = data_joined_duration
                 .withColumn("stay_type",
                         functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")))
-                .withColumn("timestamp", functions.current_timestamp());
+                ;
 
 //        Dataset<Row> data_joined_duration_2 = data_joined_duration_1
 //                .withWatermark("timestamp", "20000 milliseconds")
@@ -99,7 +102,7 @@ public class Main {
 //                        functions.window(data_joined_duration_1.col("timestamp"), "1 minute", "30 seconds"),
 //                        data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type")).count();
         Dataset<Row> data_joined_duration_2 = data_joined_duration_1
-                .withWatermark("timestamp", "1 minute")
+               // .withWatermark("timestamp", "1 minute")
                 .groupBy(
                         data_joined_duration_1.col("hotel_id"),
                         //data_joined_duration_1.col("stay_type"),
@@ -109,8 +112,8 @@ public class Main {
         data_joined_duration_2.coalesce(1).writeStream()
                 .format("parquet")
                 .trigger(Trigger.ProcessingTime("10 seconds"))
-                .outputMode(OutputMode.Update())
-                .option("checkpointLocation", "/checkpoint25")
+                .outputMode(OutputMode.Append())
+                .option("checkpointLocation", "/checkpoint26")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
