@@ -1,9 +1,9 @@
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
+import com.google.common.collect.ImmutableMap;
+import org.apache.spark.api.java.function.VoidFunction2;
+import org.apache.spark.sql.*;
 import org.apache.spark.sql.api.java.UDF1;
-import org.apache.spark.sql.functions;
 import org.apache.spark.sql.streaming.OutputMode;
+import org.apache.spark.sql.streaming.StreamingQuery;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.streaming.Trigger;
 import org.apache.spark.sql.types.DataTypes;
@@ -115,12 +115,29 @@ public class Main {
 
 
 
-        data_joined_duration_2.coalesce(1).writeStream()
-                .format("parquet")
-                .trigger(Trigger.ProcessingTime("10 seconds"))
-                .outputMode(OutputMode.Complete())
-                .option("checkpointLocation", "/checkpoint32")
-                .start("gs://spark_str/output")
+       data_joined_duration_2.coalesce(1).writeStream()
+               .foreach(new ForeachWriter<Row>() {
+                   @Override
+                   public boolean open(long partitionId, long epochId) {
+                       return true;
+                   }
+
+                   @Override
+                   public void process(Row value) {
+
+
+                   }
+
+
+                   @Override
+                   public void close(Throwable errorOrNull) {}
+               })
+               .start("gs://spark_str/output")
+//                .format("parquet")
+//                .trigger(Trigger.ProcessingTime("10 seconds"))
+//                .outputMode(OutputMode.Complete())
+//                .option("checkpointLocation", "/checkpoint32")
+//                .start("gs://spark_str/output")
                 .awaitTermination();
 
     }
