@@ -100,14 +100,15 @@ public class Main {
         Dataset<Row> data_joined_duration_2 = data_joined_duration_1
                 .withWatermark("timestamp", "1 minute")
                 .groupBy(
-                        functions.window(data_joined_duration_1.col("timestamp"), "1 minute", "30 seconds"),
+                        functions.window(functions.column("timestamp"), "1 minute", "30 seconds"),
                         data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type"))
                 .count();
 
         data_joined_duration_2.coalesce(1).writeStream()
-                .format("console")
+                .format("parquet")
                 .outputMode(OutputMode.Append())
-                .option("checkpointLocation", "/checkpoint17")
+
+                .option("checkpointLocation", "/checkpoint19")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
