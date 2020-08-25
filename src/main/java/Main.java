@@ -85,7 +85,7 @@ public class Main {
         data_joined_filtered.coalesce(1).writeStream()
                 .format("parquet")
                 .outputMode(OutputMode.Append())
-                .option("checkpointLocation", "/checkpoint4")
+                .option("checkpointLocation", "/checkpoint5")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
