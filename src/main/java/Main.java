@@ -101,7 +101,8 @@ public class Main {
         Dataset<Row> data_joined_duration_2 = data_joined_duration_1
                 .withWatermark("timestamp", "1 minute")
                 .groupBy(
-                        data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type"),
+                        data_joined_duration_1.col("hotel_id"),
+                        //data_joined_duration_1.col("stay_type"),
                         functions.window(functions.column("timestamp"), "1 minute", "30 seconds"))
                 .count();
 
@@ -109,7 +110,7 @@ public class Main {
                 .format("parquet")
                 .trigger(Trigger.ProcessingTime("10 seconds"))
                 .outputMode(OutputMode.Append())
-                .option("checkpointLocation", "/checkpoint23")
+                .option("checkpointLocation", "/checkpoint24")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
