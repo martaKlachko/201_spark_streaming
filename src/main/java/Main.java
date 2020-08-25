@@ -64,14 +64,17 @@ public class Main {
 
         Dataset<Row> data_joined =  data.select("id","hotel_id", "srch_ci", "srch_co").as("d").join(hotels_weather_joined.as("h")) // INNER JOIN is the default
                 .where("d.hotel_id = h._c0");
+
+        Dataset<Row> data_joined_selected = spark.sql("select id, hotel_id, " +
+                "srch_ci, srch_co, _c7 as lat, _c8 as lng, _c11 as avg_tmpr_f , _c12 as avg_tmpr_f , _c13 as wthr_date ");
 //
 //
 //        Dataset<Row> data_joined_duration =data_joined.withColumn("duration", data_joined.col("srch_co")
 //                        .$minus(data_joined.col("srch_ci")));
-        data_joined.coalesce(1).writeStream()
+        data_joined_selected.coalesce(1).writeStream()
                 .format("parquet")
                 .outputMode(OutputMode.Append())
-                .option("checkpointLocation", "/checkpoint1")
+                .option("checkpointLocation", "/checkpoint2")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
