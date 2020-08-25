@@ -88,14 +88,14 @@ public class Main {
         Dataset<Row> data_joined_duration = spark.sql("SELECT *,DATEDIFF( srch_co, srch_ci ) AS diff_days  from data_joined_filtered");
 
         Dataset<Row> data_joined_duration_1 = data_joined_duration
-                .withColumn("stay type",
+                .withColumn("stay_type",
                         functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")));
 
 
         data_joined_duration_1.coalesce(1).writeStream()
                 .format("parquet")
                 .outputMode(OutputMode.Append())
-                .option("checkpointLocation", "/checkpoint7")
+                .option("checkpointLocation", "/checkpoint8")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
@@ -104,15 +104,15 @@ public class Main {
     static UDF1<Integer, String> sampleUdf() {
         return (s1) -> {
             if (s1 == 1) {
-                return "Short stay";
+                return "Short_stay";
             } else if (s1 >= 2 && s1 <= 7) {
-                return "Standart stay";
+                return "Standart_stay";
             } else if (s1 > 7 && s1 <= 14) {
-                return "Standart extended stay";
+                return "Standart_extended stay";
             } else if (s1 > 14 && s1 <= 30) {
-                return "Long stay";
+                return "Long_stay";
             } else {
-                return "Erroneous data";
+                return "Erroneous_data";
             }
         };
     }
