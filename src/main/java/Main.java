@@ -72,20 +72,17 @@ public class Main {
 
         Dataset<Row> data_joined_filtered = data_joined_selected.filter(data_joined_selected.col("avg_tmpr_f").$greater(0)
                 .or(data_joined_selected.col("avg_tmpr_c").$greater(0)));
-
+        data_joined.createOrReplaceTempView("data_joined_filtered");
 //
 //        Dataset<Row> data_joined_duration =data_joined.withColumn("duration", data_joined.col("srch_co")
 //                        .$minus(data_joined.col("srch_ci")));
 
-//        Dataset<Row> data_joined_duration = data_joined_selected.withColumn("duration",
-//                data_joined_filtered.withColumn())
+        Dataset<Row> data_joined_duration = spark.sql("SELECT *,DATEDIFF( srch_co, srch_ci ) AS diff_days  from data_joined_filtered");
 
-
-
-        data_joined_filtered.coalesce(1).writeStream()
+        data_joined_duration.coalesce(1).writeStream()
                 .format("parquet")
                 .outputMode(OutputMode.Append())
-                .option("checkpointLocation", "/checkpoint5")
+                .option("checkpointLocation", "/checkpoint6")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
