@@ -103,8 +103,8 @@ public class Main {
 //                        functions.window(functions.column("timestamp"), "1 minute", "30 seconds"))
 //                .count();
 
-        Dataset<Row> data_joined_duration_2 = spark.sql("select hotel_id, stay_type, count(*) from data_joined_duration_1" +
-                "group by hotel_id, stay_type");
+        Dataset<Row> data_joined_duration_2 = spark.sql("select hotel_id, stay_type, count(*) from data_joined_duration_1 " +
+                " group by hotel_id, stay_type");
 
 
 
@@ -119,7 +119,7 @@ public class Main {
                 .format("parquet")
                 .trigger(Trigger.ProcessingTime("10 seconds"))
                 .outputMode(OutputMode.Append())
-                .option("checkpointLocation", "/checkpoint29")
+                .option("checkpointLocation", "/checkpoint30")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
