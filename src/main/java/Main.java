@@ -70,7 +70,8 @@ public class Main {
 //        Dataset<Row> data_2016_with_watermark = data_2016.withWatermark("lag_day", "2 hours");
 //        Dataset<Row> data_2017_with_watermark = data_2017.withWatermark("lag_day", "2 hours");
         //    Dataset<Row> hotels_weather_joined_with_watermark = hotels_weather_joined.withWatermark("_c13", "2 hours");
-        Dataset<Row> data  =  data_2016.union(data_2017).withColumn("timestamp", functions.current_timestamp())
+        Dataset<Row> data  =  data_2016.union(data_2017).withColumn("timestamp", functions.current_timestamp());
+        Dataset<Row> data_w  =data
                 .withWatermark("timestamp", "1 minute");
 
 
