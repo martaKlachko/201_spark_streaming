@@ -96,7 +96,7 @@ public class Main {
                 .withColumn("stay_type",
                         functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")));
 
-        data_joined_filtered.createOrReplaceTempView("data_joined_duration_1");
+        data_joined_duration_1.createOrReplaceTempView("data_joined_duration_1");
 //        Dataset<Row> data_joined_duration_2 = data_joined_duration_1
 //                .groupBy(
 //                        data_joined_duration_1.col("hotel_id"),
@@ -119,7 +119,7 @@ public class Main {
                 .format("parquet")
                 .trigger(Trigger.ProcessingTime("10 seconds"))
                 .outputMode(OutputMode.Append())
-                .option("checkpointLocation", "/checkpoint30")
+                .option("checkpointLocation", "/checkpoint31")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
