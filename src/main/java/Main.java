@@ -118,8 +118,8 @@ public class Main {
         data_joined_duration_2.coalesce(1).writeStream()
                 .format("parquet")
                 .trigger(Trigger.ProcessingTime("10 seconds"))
-                .outputMode(OutputMode.Append())
-                .option("checkpointLocation", "/checkpoint31")
+                .outputMode(OutputMode.Complete())
+                .option("checkpointLocation", "/checkpoint32")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
