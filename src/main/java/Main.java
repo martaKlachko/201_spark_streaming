@@ -67,7 +67,8 @@ public class Main {
         data_joined.createOrReplaceTempView("data_joined");
 
         Dataset<Row> data_joined_selected = spark.sql("select id, hotel_id, " +
-                "srch_ci, srch_co, _c7 as lat, _c8 as lng, _c11 as avg_tmpr_f , _c12 as avg_tmpr_c , _c13 as wthr_date from data_joined ");
+                "TO_DATE(CAST(UNIX_TIMESTAMP(srch_ci, 'yyyy-mm-dd') AS TIMESTAMP)) as srch_ci," +
+                " TO_DATE(CAST(UNIX_TIMESTAMP(srch_co, 'yyyy-mm-dd') AS TIMESTAMP)) as srch_co, _c7 as lat, _c8 as lng, _c11 as avg_tmpr_f , _c12 as avg_tmpr_c , _c13 as wthr_date from data_joined ");
 
         Dataset<Row> data_joined_filtered = data_joined_selected.filter(data_joined_selected.col("avg_tmpr_f").$greater(0)
                 .or(data_joined_selected.col("avg_tmpr_c").$greater(0)));
@@ -75,10 +76,16 @@ public class Main {
 //
 //        Dataset<Row> data_joined_duration =data_joined.withColumn("duration", data_joined.col("srch_co")
 //                        .$minus(data_joined.col("srch_ci")));
+
+//        Dataset<Row> data_joined_duration = data_joined_selected.withColumn("duration",
+//                data_joined_filtered.withColumn())
+
+
+
         data_joined_filtered.coalesce(1).writeStream()
                 .format("parquet")
                 .outputMode(OutputMode.Append())
-                .option("checkpointLocation", "/checkpoint3")
+                .option("checkpointLocation", "/checkpoint4")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
