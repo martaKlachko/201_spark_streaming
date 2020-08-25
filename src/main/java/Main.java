@@ -5,6 +5,7 @@ import org.apache.spark.sql.api.java.UDF1;
 import org.apache.spark.sql.functions;
 import org.apache.spark.sql.streaming.OutputMode;
 import org.apache.spark.sql.streaming.StreamingQueryException;
+import org.apache.spark.sql.streaming.Trigger;
 import org.apache.spark.sql.types.DataTypes;
 
 
@@ -100,13 +101,15 @@ public class Main {
         Dataset<Row> data_joined_duration_2 = data_joined_duration_1
                 .withWatermark("timestamp", "1 minute")
                 .groupBy(
-                        data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type"))
+                        data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type"),
+                        functions.window(functions.column("timestamp"), "1 minute", "30 seconds"))
                 .count();
 
         data_joined_duration_2.coalesce(1).writeStream()
                 .format("parquet")
+                .trigger(Trigger.ProcessingTime("10 seconds"))
                 .outputMode(OutputMode.Append())
-                .option("checkpointLocation", "/checkpoint21")
+                .option("checkpointLocation", "/checkpoint23")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
