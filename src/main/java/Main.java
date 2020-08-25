@@ -60,20 +60,20 @@ public class Main {
 //        Dataset<Row> data_2017_with_watermark = data_2017.withWatermark("lag_day", "2 hours");
         //    Dataset<Row> hotels_weather_joined_with_watermark = hotels_weather_joined.withWatermark("_c13", "2 hours");
         Dataset<Row> data  =  data_2016.union(data_2017);
-        data.coalesce(1).writeStream()
-                .format("parquet")
-                .outputMode(OutputMode.Append())
-        .option("checkpointLocation", "/checkpoint")
-                .start("gs://spark_str/output")
-                .awaitTermination();
 
-//        Dataset<Row> data_joined =  data.as("d").join(hotels_weather_joined.as("h")) // INNER JOIN is the default
-//                .where("d.hotel_id = h._c0");
+
+        Dataset<Row> data_joined =  data.select("id","hotel_id", "srch_ci", "srch_co").as("d").join(hotels_weather_joined.as("h")) // INNER JOIN is the default
+                .where("d.hotel_id = h._c0");
 //
 //
 //        Dataset<Row> data_joined_duration =data_joined.withColumn("duration", data_joined.col("srch_co")
 //                        .$minus(data_joined.col("srch_ci")));
-
+        data_joined.coalesce(1).writeStream()
+                .format("parquet")
+                .outputMode(OutputMode.Append())
+                .option("checkpointLocation", "/checkpoint")
+                .start("gs://spark_str/output")
+                .awaitTermination();
 
     }
 }
