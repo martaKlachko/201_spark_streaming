@@ -75,7 +75,7 @@ public class Main {
                 .withWatermark("timestamp", "1 minute");
 
 
-        Dataset<Row> data_joined =  data.select("id","hotel_id", "srch_ci", "srch_co").as("d").join(hotels_weather_joined.as("h")) // INNER JOIN is the default
+        Dataset<Row> data_joined =  data_w.select("id","hotel_id", "srch_ci", "srch_co", "timestamp").as("d").join(hotels_weather_joined.as("h")) // INNER JOIN is the default
                 .where("d.hotel_id = h._c0");
         data_joined.createOrReplaceTempView("data_joined");
 
@@ -114,7 +114,7 @@ public class Main {
                 .format("parquet")
                 .trigger(Trigger.ProcessingTime("10 seconds"))
                 .outputMode(OutputMode.Append())
-                .option("checkpointLocation", "/checkpoint27")
+                .option("checkpointLocation", "/checkpoint28")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
