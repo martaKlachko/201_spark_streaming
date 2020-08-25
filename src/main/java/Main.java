@@ -94,27 +94,32 @@ public class Main {
 
         Dataset<Row> data_joined_duration_1 = data_joined_duration
                 .withColumn("stay_type",
-                        functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")))
-                ;
+                        functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")));
 
+        data_joined_filtered.createOrReplaceTempView("data_joined_duration_1");
 //        Dataset<Row> data_joined_duration_2 = data_joined_duration_1
-//                .withWatermark("timestamp", "20000 milliseconds")
 //                .groupBy(
-//                        functions.window(data_joined_duration_1.col("timestamp"), "1 minute", "30 seconds"),
-//                        data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type")).count();
-        Dataset<Row> data_joined_duration_2 = data_joined_duration_1
-               // .withWatermark("timestamp", "1 minute")
-                .groupBy(
-                        data_joined_duration_1.col("hotel_id"),
-                        //data_joined_duration_1.col("stay_type"),
-                        functions.window(functions.column("timestamp"), "1 minute", "30 seconds"))
-                .count();
+//                        data_joined_duration_1.col("hotel_id"),
+//                        functions.window(functions.column("timestamp"), "1 minute", "30 seconds"))
+//                .count();
+
+        Dataset<Row> data_joined_duration_2 = spark.sql("select hotel_id, stay_type, count(*) from data_joined_duration_1" +
+                "group by hotel_id, stay_type");
+
+
+
+
+
+
+
+
+
 
         data_joined_duration_2.coalesce(1).writeStream()
                 .format("parquet")
                 .trigger(Trigger.ProcessingTime("10 seconds"))
                 .outputMode(OutputMode.Append())
-                .option("checkpointLocation", "/checkpoint28")
+                .option("checkpointLocation", "/checkpoint29")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
