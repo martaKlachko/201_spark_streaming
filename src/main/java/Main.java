@@ -91,14 +91,14 @@ public class Main {
                 .withColumn("stay_type",
                         functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")));
         Dataset<Row> data_joined_duration_2=data_joined_duration_1
-                .withWatermark("srch_ci", "20000 milliseconds")
+               // .withWatermark("srch_ci", "20000 milliseconds")
                 .groupBy(data_joined_duration_1.col("hotel_id"),data_joined_duration_1.col("stay_type") ).count();
 
 
         data_joined_duration_2.coalesce(1).writeStream()
                 .format("parquet")
-                .outputMode(OutputMode.Append())
-                .option("checkpointLocation", "/checkpoint12")
+                .outputMode(OutputMode.Complete())
+                .option("checkpointLocation", "/checkpoint13")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
