@@ -92,10 +92,10 @@ public class Main {
                         functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")));
 
 
-        data_joined_duration.coalesce(1).writeStream()
+        data_joined_duration_1.coalesce(1).writeStream()
                 .format("parquet")
                 .outputMode(OutputMode.Append())
-                .option("checkpointLocation", "/checkpoint6")
+                .option("checkpointLocation", "/checkpoint7")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
