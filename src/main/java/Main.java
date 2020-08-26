@@ -63,10 +63,6 @@ public class Main {
                 .csv(hotels_weather_joined_path);
 
 
-
-//        Dataset<Row> data_2016_with_watermark = data_2016.withWatermark("lag_day", "2 hours");
-//        Dataset<Row> data_2017_with_watermark = data_2017.withWatermark("lag_day", "2 hours");
-        //    Dataset<Row> hotels_weather_joined_with_watermark = hotels_weather_joined.withWatermark("_c13", "2 hours");
         Dataset<Row> data  =  data_2016.union(data_2017);
 
 
@@ -81,9 +77,6 @@ public class Main {
         Dataset<Row> data_joined_filtered = data_joined_selected.filter(data_joined_selected.col("avg_tmpr_f").$greater(0)
                 .or(data_joined_selected.col("avg_tmpr_c").$greater(0)));
         data_joined_filtered.createOrReplaceTempView("data_joined_filtered");
-//
-//        Dataset<Row> data_joined_duration =data_joined.withColumn("duration", data_joined.col("srch_co")
-//                        .$minus(data_joined.col("srch_ci")));
 
         Dataset<Row> data_joined_duration = spark.sql("SELECT *,DATEDIFF( srch_co, srch_ci ) AS diff_days  from data_joined_filtered");
 
@@ -92,11 +85,6 @@ public class Main {
                         functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")))
                 .withColumn("timestamp", functions.current_timestamp());
 
-//        Dataset<Row> data_joined_duration_2 = data_joined_duration_1
-//                .withWatermark("timestamp", "20000 milliseconds")
-//                .groupBy(
-//                        functions.window(data_joined_duration_1.col("timestamp"), "1 minute", "30 seconds"),
-//                        data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type")).count();
         Dataset<Row> data_joined_duration_2 = data_joined_duration_1
                 .withWatermark("timestamp", "1 minute")
                 .groupBy(
@@ -104,11 +92,12 @@ public class Main {
                         data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type"))
                 .count();
 
-        data_joined_duration_2.coalesce(1).writeStream()
+        data_joined_duration_2
+                // .coalesce(1)
+                .writeStream()
                 .format("parquet")
                 .outputMode(OutputMode.Append())
-
-                .option("checkpointLocation", "/checkpoint019")
+                .option("checkpointLocation", "/checkpoint020")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
