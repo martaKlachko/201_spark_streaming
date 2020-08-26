@@ -94,7 +94,7 @@ public class Main {
 //                        data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type"))
 //                .count();
 
-        String sql = "SELECT hotel_id, stay_type, count(*) FROM people GROUP BY hotel_id, stay_type";
+        String sql = "SELECT hotel_id, stay_type, count(*) FROM data_joined_duration_1 GROUP BY hotel_id, stay_type";
         Dataset<Row> data_joined_duration_2 = spark.sql(sql);
 
 //        data_joined_duration_2
