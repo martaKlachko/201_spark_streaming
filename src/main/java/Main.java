@@ -5,7 +5,6 @@ import org.apache.spark.sql.api.java.UDF1;
 import org.apache.spark.sql.functions;
 import org.apache.spark.sql.streaming.OutputMode;
 import org.apache.spark.sql.streaming.StreamingQueryException;
-import org.apache.spark.sql.streaming.Trigger;
 import org.apache.spark.sql.types.DataTypes;
 
 
@@ -17,7 +16,7 @@ public class Main {
         String path_2016 = args[0];
         //"C:\\Users\\Marta_Kurman\\201_streaming_spark\\src\\main\\resources\\201_expedia_output\\ci_year=2016";
         //  String path_2017 = "hdfs://sandbox-hdp.hortonworks.com:8020/201_expedia_output/ci_year=2017";
-        String path_2017 = args[1];
+        String path_2017 =args[1];
         //"C:\\Users\\Marta_Kurman\\201_streaming_spark\\src\\main\\resources\\201_expedia_output\\ci_year=2017";
         // String hotels_path = "hdfs://sandbox-hdp.hortonworks.com:8020/hotels";
         //  String hotels_weather_joined_path = "hdfs://sandbox-hdp.hortonworks.com:8020/hotels_weather_joined";
@@ -46,10 +45,8 @@ public class Main {
 
         Dataset<Row> data_2016 = spark
                 .readStream()
-
                 .format("parquet")
-                .parquet(path_2016)
-                ;
+                .parquet(path_2016);
 
         Dataset<Row> data_2017 = spark
                 .readStream()
@@ -70,18 +67,16 @@ public class Main {
 //        Dataset<Row> data_2016_with_watermark = data_2016.withWatermark("lag_day", "2 hours");
 //        Dataset<Row> data_2017_with_watermark = data_2017.withWatermark("lag_day", "2 hours");
         //    Dataset<Row> hotels_weather_joined_with_watermark = hotels_weather_joined.withWatermark("_c13", "2 hours");
-        Dataset<Row> data  =  data_2016.union(data_2017).withColumn("timestamp", functions.current_timestamp());
-        Dataset<Row> data_w  =data
-                .withWatermark("timestamp", "1 minute");
+        Dataset<Row> data  =  data_2016.union(data_2017);
 
 
-        Dataset<Row> data_joined =  data_w.select("id","hotel_id", "srch_ci", "srch_co", "timestamp").as("d").join(hotels_weather_joined.as("h")) // INNER JOIN is the default
+        Dataset<Row> data_joined =  data.select("id","hotel_id", "srch_ci", "srch_co").as("d").join(hotels_weather_joined.as("h")) // INNER JOIN is the default
                 .where("d.hotel_id = h._c0");
         data_joined.createOrReplaceTempView("data_joined");
 
         Dataset<Row> data_joined_selected = spark.sql("select id, hotel_id, " +
                 "TO_DATE(CAST(UNIX_TIMESTAMP(srch_ci, 'yyyy-mm-dd') AS TIMESTAMP)) as srch_ci," +
-                " TO_DATE(CAST(UNIX_TIMESTAMP(srch_co, 'yyyy-mm-dd') AS TIMESTAMP)) as srch_co, _c7 as lat, _c8 as lng, _c11 as avg_tmpr_f , _c12 as avg_tmpr_c , _c13 as wthr_date, timestamp from data_joined ");
+                " TO_DATE(CAST(UNIX_TIMESTAMP(srch_co, 'yyyy-mm-dd') AS TIMESTAMP)) as srch_co, _c7 as lat, _c8 as lng, _c11 as avg_tmpr_f , _c12 as avg_tmpr_c , _c13 as wthr_date from data_joined ");
 
         Dataset<Row> data_joined_filtered = data_joined_selected.filter(data_joined_selected.col("avg_tmpr_f").$greater(0)
                 .or(data_joined_selected.col("avg_tmpr_c").$greater(0)));
@@ -95,19 +90,14 @@ public class Main {
         Dataset<Row> data_joined_duration_1 = data_joined_duration
                 .withColumn("stay_type",
                         functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")));
+        Dataset<Row> data_joined_duration_2=data_joined_duration_1
+                .groupBy(data_joined_duration_1.col("hotel_id"),data_joined_duration_1.col("stay_type") ).count();
 
-//
-        Dataset<Row> data_joined_duration_2 = data_joined_duration_1
-
-                .groupBy(data_joined_duration_1.col("hotel_id"),
-                        functions.window(functions.column("timestamp"), "1 second", "50 milliseconds"))
-                .count();
 
         data_joined_duration_2.coalesce(1).writeStream()
                 .format("parquet")
-                .trigger(Trigger.ProcessingTime("10 seconds"))
                 .outputMode(OutputMode.Append())
-                .option("checkpointLocation", "/checkpoint03")
+                .option("checkpointLocation", "/checkpoint010")
                 .start("gs://spark_str/output")
                 .awaitTermination();
 
