@@ -107,7 +107,7 @@ public class Main {
 //                .awaitTermination();
 
         StreamingQuery query = data_joined_duration_2.writeStream()
-                .outputMode("complete")
+                .outputMode("append")
                 .format("console")
                 .start();
 
