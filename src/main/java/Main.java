@@ -3,7 +3,6 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.api.java.UDF1;
 import org.apache.spark.sql.functions;
-import org.apache.spark.sql.streaming.OutputMode;
 import org.apache.spark.sql.streaming.StreamingQuery;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.types.DataTypes;
@@ -86,16 +85,17 @@ public class Main {
                         functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")))
                 .withColumn("timestamp", functions.current_timestamp());
         data_joined_duration_1.createOrReplaceTempView("data_joined_duration_1");
+        data_joined_duration_1.explain();
+        Dataset<Row> data_joined_duration_2 = data_joined_duration_1
+                .withWatermark("timestamp", "1 minute")
+                .groupBy(
+                        functions.window(functions.column("timestamp"), "1 minute", "30 seconds"),
+                        data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type"))
+                .count();
+        data_joined_duration_2.explain();
 
-//        Dataset<Row> data_joined_duration_2 = data_joined_duration_1
-//                .withWatermark("timestamp", "1 minute")
-//                .groupBy(
-//                        functions.window(functions.column("timestamp"), "1 minute", "30 seconds"),
-//                        data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type"))
-//                .count();
-
-        String sql = "SELECT hotel_id, stay_type, count(*) FROM data_joined_duration_1 GROUP BY hotel_id, stay_type";
-        Dataset<Row> data_joined_duration_2 = spark.sql(sql);
+//        String sql = "SELECT hotel_id, stay_type, count(*) FROM data_joined_duration_1 GROUP BY hotel_id, stay_type";
+//        Dataset<Row> data_joined_duration_2 = spark.sql(sql);
 
 //        data_joined_duration_2
 //                // .coalesce(1)
