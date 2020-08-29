@@ -90,7 +90,9 @@ public class MainS {
         Dataset<Row> data_joined_duration_3 = data_joined_duration_2.withColumn("arr", functions.concat_ws(", ",
                 data_joined_duration_2.col("stay_type"), data_joined_duration_2.col("count")));
 
-        data_joined_duration_3.coalesce(1).orderBy(data_joined_duration_2.col("hotel_id")).write()
+        Dataset<Row> data_joined_duration_4 = data_joined_duration_3.groupBy(data_joined_duration_3.col("hotel_id"))
+                .agg(functions.collect_set("arr"));
+        data_joined_duration_4.coalesce(1).orderBy(data_joined_duration_4.col("hotel_id")).write()
                 .parquet("gs://spark_str/output");
 
 
