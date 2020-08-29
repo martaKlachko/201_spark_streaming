@@ -84,34 +84,30 @@ public class Main {
                 .withColumn("stay_type",
                         functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")))
                 .withColumn("timestamp", functions.current_timestamp());
-        data_joined_duration_1.createOrReplaceTempView("data_joined_duration_1");
-        data_joined_duration_1.explain();
-        Dataset<Row> data_joined_duration_2 = data_joined_duration_1
-                .withWatermark("timestamp", "1 minute")
-                .groupBy(
-                        functions.window(functions.column("timestamp"), "1 minute", "30 seconds"),
-                        data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type"))
-                .count();
-        data_joined_duration_2.explain();
 
-//        String sql = "SELECT hotel_id, stay_type, count(*) FROM data_joined_duration_1 GROUP BY hotel_id, stay_type";
-//        Dataset<Row> data_joined_duration_2 = spark.sql(sql);
 
-//        data_joined_duration_2
-//                // .coalesce(1)
-//                .writeStream()
-//                .format("parquet")
-//                .outputMode(OutputMode.Complete())
-//                .option("checkpointLocation", "/checkpoint020")
-//                .start("gs://spark_str/output")
-//                .awaitTermination();
+//        Dataset<Row> data_joined_duration_2 = data_joined_duration_1
+//                .withWatermark("timestamp", "1 minute")
+//                .groupBy(
+//                        functions.window(functions.column("timestamp"), "1 minute", "30 seconds"),
+//                        data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type"))
+//                .count();
 
-        StreamingQuery query = data_joined_duration_2.writeStream()
-                .outputMode("append")
-                .format("console")
-                .start();
+        data_joined_duration_1
+                // .coalesce(1)
+                .writeStream()
+                .format("parquet")
+                .outputMode("org.elasticsearch.spark.sql")
+                .option("checkpointLocation", "/checkpoint030")
+                .start("gs://spark_str/output")
+                .awaitTermination();
 
-        query.awaitTermination();
+//        StreamingQuery query = data_joined_duration_2.writeStream()
+//                .outputMode("append")
+//                .format("console")
+//                .start();
+
+//        query.awaitTermination();
 
     }
 
