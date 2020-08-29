@@ -5,7 +5,10 @@ import org.apache.spark.sql.api.java.UDF1;
 import org.apache.spark.sql.functions;
 import org.apache.spark.sql.streaming.StreamingQuery;
 import org.apache.spark.sql.streaming.StreamingQueryException;
+import org.apache.spark.sql.streaming.Trigger;
 import org.apache.spark.sql.types.DataTypes;
+
+import java.util.concurrent.TimeUnit;
 
 
 public class Main {
@@ -99,6 +102,8 @@ public class Main {
                 .format("org.elasticsearch.spark.sql")
                 .outputMode("append")
                 .option("checkpointLocation", "/checkpoint030")
+                .option("es.mapping.id", "MY_OPTIONAL_ID_ATTRIBUTE")
+                .trigger(Trigger.ProcessingTime(5, TimeUnit.SECONDS))
                 .start("spark-str/str")
                 .awaitTermination();
 
