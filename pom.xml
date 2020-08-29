@@ -120,6 +120,13 @@
         <version>${spark.version}</version>
         <scope>provided</scope>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch-hadoop -->
+    <dependency>
+        <groupId>org.elasticsearch</groupId>
+        <artifactId>elasticsearch-hadoop</artifactId>
+        <version>7.8.1</version>
+    </dependency>
+
 
     <dependency>
         <groupId>org.apache.spark</groupId>

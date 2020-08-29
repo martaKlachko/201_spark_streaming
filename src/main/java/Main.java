@@ -96,8 +96,8 @@ public class Main {
         data_joined_duration_1
                 // .coalesce(1)
                 .writeStream()
-                .format("parquet")
-                .outputMode("org.elasticsearch.spark.sql")
+                .format("org.elasticsearch.spark.sql")
+                .outputMode("append")
                 .option("checkpointLocation", "/checkpoint030")
                 .start("spark-str/str")
                 .awaitTermination();
