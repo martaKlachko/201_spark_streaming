@@ -82,13 +82,13 @@ public class MainS {
         data_joined_duration_1.createOrReplaceTempView("data_joined_duration_1");
 
         Dataset<Row> data_joined_duration_2 = data_joined_duration_1
-                .withWatermark("timestamp", "1 minute")
+
                 .groupBy(
                         data_joined_duration_1.col("hotel_id"), data_joined_duration_1.col("stay_type"))
                 .count();
 
 
-       data_joined_duration_2.write()
+       data_joined_duration_2.coalesce(1).orderBy(data_joined_duration_2.col("hotel_id")).write()
                 .parquet("gs://spark_str/output");
 
 
