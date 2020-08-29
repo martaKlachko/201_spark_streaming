@@ -99,7 +99,7 @@ public class Main {
                 .format("parquet")
                 .outputMode("org.elasticsearch.spark.sql")
                 .option("checkpointLocation", "/checkpoint030")
-                .start("gs://spark_str/output")
+                .start("spark-str/str")
                 .awaitTermination();
 
 //        StreamingQuery query = data_joined_duration_2.writeStream()
