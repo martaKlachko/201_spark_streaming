@@ -2,6 +2,8 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.api.java.UDF1;
+import org.apache.spark.sql.expressions.Window;
+import org.apache.spark.sql.expressions.WindowSpec;
 import org.apache.spark.sql.functions;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.types.DataTypes;
@@ -90,8 +92,14 @@ public class MainS {
         Dataset<Row> data_joined_duration_3 = data_joined_duration_2.withColumn("arr", functions.concat_ws(", ",
                 data_joined_duration_2.col("stay_type"), data_joined_duration_2.col("count")));
 
-        Dataset<Row> data_joined_duration_4 = data_joined_duration_3.groupBy(data_joined_duration_3.col("hotel_id"))
-                .agg(functions.collect_set("arr").alias("arrtp"));
+        WindowSpec w = Window.partitionBy(data_joined_duration_3.col("hotel_id"));
+        Dataset<Row> data_joined_duration_4 = data_joined_duration_3.withColumn("test",
+               functions.concat(data_joined_duration_3.col("arr")).over(w));
+
+
+
+
+
         data_joined_duration_4.coalesce(1).orderBy(data_joined_duration_4.col("hotel_id")).write()
                 .parquet("gs://spark_str/output");
 
