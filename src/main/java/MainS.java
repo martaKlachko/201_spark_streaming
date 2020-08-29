@@ -93,8 +93,8 @@ public class MainS {
                 data_joined_duration_2.col("stay_type"), data_joined_duration_2.col("count")));
 
         WindowSpec w = Window.partitionBy(data_joined_duration_3.col("hotel_id"));
-        Dataset<Row> data_joined_duration_4 = data_joined_duration_3.withColumn("test",
-               functions.collect_list(data_joined_duration_3.col("arr")).over(w));
+        Dataset<Row> data_joined_duration_4 = data_joined_duration_3.groupBy(data_joined_duration_2.col("hotel_id")).
+                agg(functions.collect_list(data_joined_duration_3.col("arr")));
 
 
 
