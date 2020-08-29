@@ -53,7 +53,8 @@ public class MainS {
 
 
         Dataset<Row> hotels_weather_joined = spark
-                .read().option("header", "true").option("inferSchema", true)
+                .read().option("header", "false")
+                .option("inferSchema", true)
                 .csv(hotels_weather_joined_path);
 
 
