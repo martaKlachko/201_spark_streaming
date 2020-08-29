@@ -94,7 +94,7 @@ public class MainS {
 
         WindowSpec w = Window.partitionBy(data_joined_duration_3.col("hotel_id"));
         Dataset<Row> data_joined_duration_4 = data_joined_duration_3.groupBy(data_joined_duration_3.col("hotel_id")).
-                agg(functions.collect_list(data_joined_duration_3.col("arr"))).alias("jjj");
+                agg(functions.collect_list(data_joined_duration_3.col("arr")).alias("lll"));
 
 
 
