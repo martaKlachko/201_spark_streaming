@@ -101,8 +101,10 @@ public class Main {
                 .writeStream()
                 .format("org.elasticsearch.spark.sql")
                 .outputMode("append")
-                .option("checkpointLocation", "/checkpoint030")
+                .option("checkpointLocation", "/checkpoint031")
                 .option("es.mapping.id", "MY_OPTIONAL_ID_ATTRIBUTE")
+                .option("es.nodes","7442e3172a8e4d3784e5b2acc8a7edac.europe-west3.gcp.cloud.es.io")
+                .option("es.port","9243")
                 .trigger(Trigger.ProcessingTime(5, TimeUnit.SECONDS))
                 .start("spark-str/str")
                 .awaitTermination();

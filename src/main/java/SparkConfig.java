@@ -11,6 +11,7 @@ public class SparkConfig {
                 .config(ConfigurationOptions.ES_PORT, "9243")
                 .config("spark.es.net.http.auth.pass", "")
                 .config("es.nodes.wan.only", "true")
+                .config("es.index.auto.create", "true")
                 .enableHiveSupport().getOrCreate();
     }
 }
