@@ -9,6 +9,7 @@ public class SparkConfig {
                 .config(ConfigurationOptions.ES_NET_HTTP_AUTH_PASS, "DEXvRCDw3lc0kStZugpPx963")
                 .config(ConfigurationOptions.ES_NODES, "7442e3172a8e4d3784e5b2acc8a7edac.europe-west3.gcp.cloud.es.io")
                 .config(ConfigurationOptions.ES_PORT, "9243")
+                .config("spark.es.net.http.auth.pass", "")
                 .config("es.nodes.wan.only", "true")
                 .enableHiveSupport().getOrCreate();
     }
