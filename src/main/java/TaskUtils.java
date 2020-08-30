@@ -31,7 +31,7 @@ public class TaskUtils {
 
     static Dataset<Row> task1(SparkSession ss, Dataset<Row> ds1, Dataset<Row> ds2, Dataset<Row> ds3) {
         Dataset<Row> data = ds1.union(ds2);
-        Dataset<Row> data_joined = data.select("id", "hotel_id", "srch_ci", "srch_co").as("d").join(hotels_weather_joined.as("h")) // INNER JOIN is the default
+        Dataset<Row> data_joined = data.select("id", "hotel_id", "srch_ci", "srch_co").as("d").join(ds3.as("h")) // INNER JOIN is the default
                 .where("d.hotel_id = h._c0");
         data_joined.createOrReplaceTempView("data_joined");
 

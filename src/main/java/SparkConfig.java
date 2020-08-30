@@ -1,5 +1,4 @@
 import org.apache.spark.sql.SparkSession;
-import org.elasticsearch.hadoop.cfg.ConfigurationOptions;
 
 public class SparkConfig {
     static SparkSession getSession() {
