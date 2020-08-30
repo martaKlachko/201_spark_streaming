@@ -1,13 +1,16 @@
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.api.java.UDF1;
-import org.apache.spark.sql.expressions.Window;
-import org.apache.spark.sql.expressions.WindowSpec;
 import org.apache.spark.sql.functions;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.types.DataTypes;
 
+import org.elasticsearch.spark.rdd.EsSpark;
+import org.elasticsearch.spark.*;
+import org.elasticsearch.spark.rdd.api.java.JavaEsSpark;
 
 public class MainS {
 
@@ -34,7 +37,7 @@ public class MainS {
                 .builder()
                 .appName("JavaStructuredStreaming")
                 .master("local[2]")
-                .config("spark.sql.streaming.schemaInference", true)
+                .config("es.index.auto.create", "true")
                 .config("spark.local.dir", "/tmp/spark-temp")
                 .getOrCreate();
 
@@ -92,16 +95,18 @@ public class MainS {
         Dataset<Row> data_joined_duration_3 = data_joined_duration_2.withColumn("arr", functions.concat_ws(", ",
                 data_joined_duration_2.col("stay_type"), data_joined_duration_2.col("count")));
 
-        WindowSpec w = Window.partitionBy(data_joined_duration_3.col("hotel_id"));
-        Dataset<Row> data_joined_duration_4 = data_joined_duration_3.groupBy(data_joined_duration_3.col("hotel_id")).
-                agg(functions.collect_list(data_joined_duration_3.col("arr")).alias("lll"));
+//        WindowSpec w = Window.partitionBy(data_joined_duration_3.col("hotel_id"));
+//        Dataset<Row> data_joined_duration_4 = data_joined_duration_3.groupBy(data_joined_duration_3.col("hotel_id")).
+//                agg(functions.collect_list(data_joined_duration_3.col("arr")).alias("lll"));
+//
 
 
 
 
+//        data_joined_duration_3.coalesce(1).orderBy(data_joined_duration_3.col("hotel_id")).write()
+//                .parquet("gs://spark_str/output");
 
-        data_joined_duration_4.coalesce(1).orderBy(data_joined_duration_4.col("hotel_id")).write()
-                .parquet("gs://spark_str/output");
+        JavaEsSpark.saveToEs(data_joined_duration_3.toJavaRDD(), "spark/es");
 
 
     }

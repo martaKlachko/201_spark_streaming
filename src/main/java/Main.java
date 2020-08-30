@@ -32,13 +32,15 @@ public class Main {
 //        String schemaString = "id hotel_id srch_ci srch_co lag_day diff value";
 
 
-        SparkSession spark = SparkSession
-                .builder()
-                .appName("JavaStructuredStreaming")
-                .master("local[2]")
-                .config("spark.sql.streaming.schemaInference", true)
-                .config("spark.local.dir", "/tmp/spark-temp")
-                .getOrCreate();
+//        SparkSession spark = SparkSession
+//                .builder()
+//                .appName("JavaStructuredStreaming")
+//                .master("local[2]")
+//                .config("spark.sql.streaming.schemaInference", true)
+//                .config("spark.local.dir", "/tmp/spark-temp")
+//                .getOrCreate();
+
+        SparkSession spark = SparkConfig.getSession();
 
         spark
                 .sqlContext()
