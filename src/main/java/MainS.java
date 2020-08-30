@@ -103,10 +103,10 @@ public class MainS {
 
 
 
-//        data_joined_duration_3.coalesce(1).orderBy(data_joined_duration_3.col("hotel_id")).write()
-//                .parquet("gs://spark_str/output");
+       data_joined_duration_3.coalesce(1).orderBy(data_joined_duration_3.col("hotel_id")).write().format("csv")
+               .save("gs://spark_str/output");
 
-        JavaEsSpark.saveToEs(data_joined_duration_3.toJavaRDD(), "spark/es");
+      //  JavaEsSpark.saveToEs(data_joined_duration_3.toJavaRDD(), "spark/es");
 
 
     }
