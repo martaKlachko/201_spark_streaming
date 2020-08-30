@@ -105,7 +105,7 @@ public class Main {
                 .option("es.mapping.id", "MY_OPTIONAL_ID_ATTRIBUTE")
                 .option("es.nodes","7442e3172a8e4d3784e5b2acc8a7edac.europe-west3.gcp.cloud.es.io")
                 .option("es.port","9243")
-                .option("es.batch.size.entries" ,  "1")
+               // .option("es.batch.size.entries" ,  "1")
                 .trigger(Trigger.ProcessingTime(5, TimeUnit.SECONDS))
                 .start("spark-str/str")
                 .awaitTermination();
