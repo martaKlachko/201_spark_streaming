@@ -60,9 +60,9 @@ public class Main {
 
         Dataset<Row> data_joined_duration_1 = data_joined_duration
                 .withColumn("stay_type",
-                        functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")))
+                        functions.callUDF("sampleUDF", data_joined_duration.col("diff_days")));
 
-                
+
         data_joined_duration_1
                 .coalesce(1)
                 .writeStream()
