@@ -92,9 +92,14 @@ public class MainS {
                 .count();
 
 
-        Dataset<Row> data_joined_duration_3 = data_joined_duration_2.withColumn("arr", functions.concat_ws(", ",
-                data_joined_duration_2.col("stay_type"), data_joined_duration_2.col("count")))
+//        Dataset<Row> data_joined_duration_3 = data_joined_duration_2.withColumn("arr", functions.concat_ws(", ",
+//                data_joined_duration_2.col("stay_type"), data_joined_duration_2.col("count")))
+//                .withColumn("timestamp", functions.current_timestamp());
+
+        Dataset<Row> data_joined_duration_3 = data_joined_duration_2
                 .withColumn("timestamp", functions.current_timestamp());
+
+
 
 //        WindowSpec w = Window.partitionBy(data_joined_duration_3.col("hotel_id"));
 //        Dataset<Row> data_joined_duration_4 = data_joined_duration_3.groupBy(data_joined_duration_3.col("hotel_id")).
